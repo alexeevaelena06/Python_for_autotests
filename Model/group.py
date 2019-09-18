@@ -3,6 +3,3 @@ class Group:
         self.groupname = groupname
         self.header = header
         self.footer = footer
-
-
-
