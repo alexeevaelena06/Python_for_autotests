@@ -18,3 +18,10 @@ class Application:
     def go_to_website(self, url):
         wd = self.wd
         wd.get(url)
+
+    def is_valid(self):
+        try:
+            self.wd.current_url
+            return True
+        except:
+            return False
