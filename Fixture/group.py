@@ -60,3 +60,8 @@ class GroupHelper:
         wd.find_element(By.NAME, "update").click()
         # return to group page
         self.return_to_group_page()
+
+    def count(self):
+        wd = self.app.wd
+        wd.find_element(By.LINK_TEXT, "groups").click()
+        return len(wd.find_elements(By.NAME, "selected[]"))
