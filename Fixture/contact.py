@@ -1,9 +1,14 @@
 from selenium.webdriver.common.by import By
+from Fixture.locators import admin_page
 
 
 class ContactHelper:
     def __init__(self, app):
         self.app = app
+
+    def return_to_contact_page(self):
+        wd = self.app.wd
+        self.app.go_to_website(admin_page)
 
     def create(self, contact):
         wd = self.app.wd
@@ -64,3 +69,15 @@ class ContactHelper:
         wd.find_element(By.NAME, "notes").click()
         wd.find_element(By.NAME, "notes").send_keys(contact.notes)
         wd.find_element(By.CSS_SELECTOR, "input:nth-child(87)").click()
+        self.return_to_contact_page()
+
+    def delete_first_contact(self):
+        wd = self.app.wd
+        wd.find_element(By.NAME, "selected[]").click()
+        wd.find_element(By.CSS_SELECTOR, ".left:nth-child(8) > input").click()
+        assert wd.switch_to.alert.text == "Delete 1 addresses?"
+        wd.switch_to.alert.accept()
+
+    def count(self):
+        wd = self.app.wd
+        return len(wd.find_elements(By.NAME, "selected[]"))
