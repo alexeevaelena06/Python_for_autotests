@@ -13,7 +13,7 @@ def test_1_add_new_group(app):
 
 def test_2_add_new_group(app):
     old_groups = app.group.get_group_list()
-    group = Group()
+    group = Group(group_name="", group_header="", group_footer="")
     app.group.create(group)
     new_groups = app.group.get_group_list()
     assert len(old_groups) + 1 == len(new_groups)
