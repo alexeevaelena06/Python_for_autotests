@@ -1,10 +1,52 @@
+import re
+
 from selenium.webdriver.common.by import By
 from Fixture.locators import admin_page
+from Model.contact import Contact
 
 
 class ContactHelper:
     def __init__(self, app):
         self.app = app
+
+    def change_field_value(self, field_name, text):
+        wd = self.app.wd
+        if text is not None:
+            wd.find_element_by_name(field_name).click()
+            wd.find_element_by_name(field_name).clear()
+            wd.find_element_by_name(field_name).send_keys(text)
+
+    contact_cache = None
+
+    def get_contact_list(self):
+        if self.contact_cache is None:
+            wd = self.app.wd
+            self.app.open_home_page()
+            self.contact_cache = []
+            for row in wd.find_elements_by_name("entry"):
+                cells = row.find_elements_by_tag_name("td")
+                firstname = cells[1].text
+                lastname = cells[2].text
+                id = cells[0].find_element_by_tag_name("input").get_attribute("value")
+                all_phones = cells[5].text.splitlines()
+                self.contact_cache.append(Contact(firstname=firstname, lastname=lastname, id=id,
+                                                  homephone=all_phones[0], mobilephone=all_phones[1],
+                                                  workphone=all_phones[2], secondryphone=all_phones[3]))
+        return list(self.contact_cache)
+
+    def open_contact_to_edit_by_index(self, index):
+        wd = self.app.wd
+        self.app.open_home_page()
+        row = wd.find_elements_by_name("entry")[index]
+        cell = row.find_elements_by_tag_name("td")[7]
+        cell.find_element_by_tag_name("a").click()
+
+    def open_contact_view_by_index(self, index):
+        wd = self.app.wd
+        self.app.open_home_page()
+        row = wd.find_elements_by_name("entry")[index]
+        cell = row.find_elements_by_tag_name("td")[6]
+        cell.find_element_by_tag_name("a").click()
 
     def return_to_contact_page(self):
         wd = self.app.wd
@@ -14,60 +56,17 @@ class ContactHelper:
         wd = self.app.wd
         wd.find_element(By.LINK_TEXT, "add new").click()
         wd.find_element(By.NAME, "firstname").click()
-        wd.find_element(By.NAME, "firstname").send_keys(contact.name)
-        wd.find_element(By.NAME, "middlename").click()
-        wd.find_element(By.NAME, "middlename").send_keys(contact.middle_name)
+        wd.find_element(By.NAME, "firstname").send_keys(contact.firstname)
         wd.find_element(By.NAME, "lastname").click()
-        wd.find_element(By.NAME, "lastname").send_keys(contact.last_name)
-        wd.find_element(By.NAME, "nickname").click()
-        wd.find_element(By.NAME, "nickname").send_keys(contact.nick_name)
-        wd.find_element(By.NAME, "title").click()
-        wd.find_element(By.NAME, "title").send_keys(contact.title)
-        wd.find_element(By.NAME, "company").click()
-        wd.find_element(By.NAME, "company").send_keys(contact.my_company)
-        wd.find_element(By.NAME, "address").click()
-        wd.find_element(By.NAME, "address").send_keys(contact.address)
-        wd.find_element(By.NAME, "theform").click()
+        wd.find_element(By.NAME, "lastname").send_keys(contact.lastname)
         wd.find_element(By.NAME, "home").click()
-        wd.find_element(By.NAME, "home").send_keys(contact.home_phone)
+        wd.find_element(By.NAME, "home").send_keys(contact.homephone)
         wd.find_element(By.NAME, "mobile").click()
-        wd.find_element(By.NAME, "mobile").send_keys(contact.mobile_phone)
+        wd.find_element(By.NAME, "mobile").send_keys(contact.mobilephone)
         wd.find_element(By.NAME, "work").click()
-        wd.find_element(By.NAME, "work").send_keys(contact.work_phone)
-        wd.find_element(By.NAME, "fax").click()
-        wd.find_element(By.NAME, "fax").send_keys(contact.fax)
-        wd.find_element(By.NAME, "email").click()
-        wd.find_element(By.NAME, "email").send_keys(contact.email_1)
-        wd.find_element(By.NAME, "email2").click()
-        wd.find_element(By.NAME, "email2").send_keys(contact.email_2)
-        wd.find_element(By.NAME, "email3").click()
-        wd.find_element(By.NAME, "email3").send_keys(contact.email_3)
-        wd.find_element(By.NAME, "bday").click()
-        dropdown = wd.find_element(By.NAME, "bday")
-        dropdown.find_element(By.XPATH, f"//option[. = {contact.bth_day}]").click()
-        wd.find_element(By.NAME, "bday").click()
-        wd.find_element(By.NAME, "bmonth").click()
-        dropdown = wd.find_element(By.NAME, "bmonth")
-        dropdown.find_element(By.XPATH, f"//option[. = '{contact.bth_month}']").click()
-        wd.find_element(By.NAME, "bmonth").click()
-        wd.find_element(By.NAME, "byear").click()
-        wd.find_element(By.NAME, "byear").send_keys(contact.bthday_year)
-        wd.find_element(By.NAME, "aday").click()
-        dropdown = wd.find_element(By.NAME, "aday")
-        dropdown.find_element(By.XPATH, "//option[. = '6']").click()
-        wd.find_element(By.NAME, "aday").click()
-        wd.find_element(By.NAME, "amonth").click()
-        dropdown = wd.find_element(By.NAME, "amonth")
-        dropdown.find_element(By.XPATH, "//option[. = 'April']").click()
-        wd.find_element(By.NAME, "amonth").click()
-        wd.find_element(By.NAME, "ayear").click()
-        wd.find_element(By.NAME, "ayear").send_keys(contact.a_year)
-        wd.find_element(By.NAME, "address2").click()
-        wd.find_element(By.NAME, "address2").send_keys(contact.second_address)
+        wd.find_element(By.NAME, "work").send_keys(contact.workphone)
         wd.find_element(By.NAME, "phone2").click()
-        wd.find_element(By.NAME, "phone2").send_keys(contact.home_phone2)
-        wd.find_element(By.NAME, "notes").click()
-        wd.find_element(By.NAME, "notes").send_keys(contact.notes)
+        wd.find_element(By.NAME, "phone2").send_keys(contact.secondryphone)
         wd.find_element(By.CSS_SELECTOR, "input:nth-child(87)").click()
         self.return_to_contact_page()
 
@@ -81,3 +80,27 @@ class ContactHelper:
     def count(self):
         wd = self.app.wd
         return len(wd.find_elements(By.NAME, "selected[]"))
+
+    def get_contact_info_from_edit_page(self, index):
+        wd = self.app.wd
+        self.open_contact_to_edit_by_index(index)
+        firstname = wd.find_element_by_name("firstname").get_attribute("value")
+        lastname = wd.find_element_by_name("lastname").get_attribute("value")
+        id = wd.find_element_by_name("id").get_attribute("value")
+        homephone = wd.find_element_by_name("home").get_attribute("value")
+        mobilephone = wd.find_element_by_name("mobile").get_attribute("value")
+        workphone = wd.find_element_by_name("work").get_attribute("value")
+        secondryphone = wd.find_element_by_name("phone2").get_attribute("value")
+        return Contact(firstname=firstname, lastname=lastname, id=id,
+                       homephone=homephone, mobilephone=mobilephone, workphone=workphone, secondryphone=secondryphone)
+
+    def get_contact_from_view_page(self, index):
+        wd = self.app.wd
+        self.open_contact_view_by_index(index)
+        text = wd.find_element_by_id("content").text
+        homephone = re.search("H: (.*)", text).group(1)
+        mobilephone = re.search("M: (.*)", text).group(1)
+        workphone = re.search("W: (.*)", text).group(1)
+        secondryphone = re.search("P: (.*)", text).group(1)
+        return Contact(homephone=homephone, mobilephone=mobilephone, workphone=workphone, secondryphone=secondryphone)
+
