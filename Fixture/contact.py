@@ -93,6 +93,16 @@ class ContactHelper:
         return Contact(firstname=firstname, lastname=lastname, id=id,
                        homephone=homephone, mobilephone=mobilephone, workphone=workphone, secondryphone=secondryphone)
 
+    def get_contacts_join_from_edit_page(self, index):
+        wd = self.app.wd
+        self.open_contact_to_edit_by_index(index)
+        homephone = wd.find_element_by_name("home").get_attribute("value")
+        mobilephone = wd.find_element_by_name("mobile").get_attribute("value")
+        workphone = wd.find_element_by_name("work").get_attribute("value")
+        secondryphone = wd.find_element_by_name("phone2").get_attribute("value")
+        all_phones_from_edit_page = ''.join([homephone, mobilephone, workphone, secondryphone])
+        return Contact(all_phones_from_edit_page=all_phones_from_edit_page)
+
     def get_contact_from_view_page(self, index):
         wd = self.app.wd
         self.open_contact_view_by_index(index)
@@ -103,3 +113,9 @@ class ContactHelper:
         secondryphone = re.search("P: (.*)", text).group(1)
         return Contact(homephone=homephone, mobilephone=mobilephone, workphone=workphone, secondryphone=secondryphone)
 
+    def get_contacts_join_from_view_page(self, index):
+        wd = self.app.wd
+        self.open_contact_view_by_index(index)
+        text = wd.find_element_by_id("content").text
+        all_phones_from_view_page = ','.join(re.findall("[H|M|W|P:] (.*)", text))
+        return Contact(all_phones_from_view_page=all_phones_from_view_page)

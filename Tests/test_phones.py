@@ -8,12 +8,9 @@ def test_phones_on_home_page(app):
 
 
 def test_phones_on_contact_view_page(app):
-    contact_from_view_page = app.contact.get_contact_from_view_page(0)
-    contact_from_edit_page = app.contact.get_contact_info_from_edit_page(0)
-    assert contact_from_view_page.homephone == contact_from_edit_page.homephone
-    assert contact_from_view_page.mobilephone == contact_from_edit_page.mobilephone
-    assert contact_from_view_page.workphone == contact_from_edit_page.workphone
-    assert contact_from_view_page.secondryphone == contact_from_edit_page.secondryphone
+    contacts_join_from_view_page = app.contact.get_contacts_join_from_view_page(2)
+    contacts_join_from_edit_page = app.contact.get_contacts_join_from_edit_page(2)
+    assert contacts_join_from_view_page.all_phones_from_view_page == contacts_join_from_edit_page.all_phones_from_edit_page
 
 
 def clear(s):
