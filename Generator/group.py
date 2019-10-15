@@ -10,7 +10,7 @@ try:
     opts, args = getopt.getopt(sys.argv[1:], "n:f:", ["number of groups", "file"])
 except getopt.GetoptError as err:
     getopt.usage()
-    sys.exit(2)
+    sys.exit(2)  # use 2 for command line syntax errors and 1 for all other kind of errors
 
 
 n = 5
